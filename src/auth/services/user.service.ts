@@ -8,4 +8,8 @@ export class UserService {
   async findUserByEmail(email: string) {
     return await this.prismaServise.user.findUnique({ where: { email } });
   }
+
+  async findUserById(id: number) {
+    return await this.prismaServise.user.findUnique({ where: { id } });
+  }
 }

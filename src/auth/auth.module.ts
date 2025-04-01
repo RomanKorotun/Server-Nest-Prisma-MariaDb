@@ -6,12 +6,14 @@ import { UserService } from './services/user.service.js';
 import { PasswordService } from './services/password.service.js';
 import { SigninService } from './services/signin.service.js';
 import { TokenServise } from '../common/services/token.service.js';
+import { CurrentService } from './services/current.service.js';
 
 @Module({
   controllers: [AuthController],
   providers: [
     SignupService,
     SigninService,
+    CurrentService,
     UserService,
     PasswordService,
     PrismaService,

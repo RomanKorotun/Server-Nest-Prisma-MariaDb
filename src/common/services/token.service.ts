@@ -50,4 +50,22 @@ export class TokenServise {
       });
     }
   }
+
+  tokenVerify(token: string, tokenType: 'access' | 'refresh') {
+    const acceessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
+    const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+
+    if (!acceessSecret || !refreshSecret) {
+      throw new HttpException(
+        'Missing required values: accessSecret, refreshSecret',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    if (tokenType === 'access') {
+      return this.jwtService.verify(token, {
+        secret: acceessSecret,
+      });
+    }
+  }
 }
