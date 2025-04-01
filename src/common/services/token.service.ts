@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { nanoid } from 'nanoid';
 
 @Injectable()
 export class TokenServise {
@@ -10,7 +9,11 @@ export class TokenServise {
     private readonly jwtService: JwtService,
   ) {}
 
-  tokenGenerate(userId: number, tokenType: 'access' | 'refresh') {
+  tokenGenerate(
+    userId: number,
+    tokenIdentifier: string,
+    tokenType: 'access' | 'refresh',
+  ) {
     const acceessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
     const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
     const accessTime = this.configService.get<string>('JWT_ACCESS_TIME');
@@ -32,8 +35,6 @@ export class TokenServise {
       );
     }
 
-    const tokenIdentifier = nanoid();
-
     const payload = { id: userId, tokenIdentifier };
 
     if (tokenType === 'access') {
@@ -49,6 +50,11 @@ export class TokenServise {
         expiresIn: parsedRefreshTime,
       });
     }
+
+    throw new HttpException(
+      'Invalid token type provided',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 
   tokenVerify(token: string, tokenType: 'access' | 'refresh') {
@@ -67,5 +73,16 @@ export class TokenServise {
         secret: acceessSecret,
       });
     }
+
+    if (tokenType === 'refresh') {
+      return this.jwtService.verify(token, {
+        secret: refreshSecret,
+      });
+    }
+
+    throw new HttpException(
+      'Invalid token type provided',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }

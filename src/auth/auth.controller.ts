@@ -7,7 +7,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { SignupService } from './services/signup.service.js';
 import { SignupDto } from './dto/signup.dto.js';
 import { SigninDto } from './dto/signinDto.js';
@@ -15,6 +15,7 @@ import { SigninService } from './services/signin.service.js';
 import { CurrentService } from './services/current.service.js';
 import { AuthenticateGuard } from '../common/guards/authenticate.guard.js';
 import { ICustomRequest } from '../common/interfaces/auth.interface.js';
+import { RefreshService } from './services/refresh.service.js';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +23,7 @@ export class AuthController {
     private readonly signupService: SignupService,
     private readonly signinService: SigninService,
     private readonly currentService: CurrentService,
+    private readonly refreshService: RefreshService,
   ) {}
 
   @Post('signup')
@@ -41,5 +43,13 @@ export class AuthController {
   @UseGuards(AuthenticateGuard)
   current(@Req() req: ICustomRequest) {
     return this.currentService.current(req);
+  }
+
+  @Get('refresh')
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    await this.refreshService.refresh(req, res);
+    res.status(200).json({
+      message: 'Access token and refresh token have been set in the cookies',
+    });
   }
 }

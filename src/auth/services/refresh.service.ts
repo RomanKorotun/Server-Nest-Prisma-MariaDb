@@ -4,41 +4,50 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { nanoid } from 'nanoid';
-import { SigninDto } from '../dto/signinDto.js';
-import { UserService } from './user.service.js';
-import { PasswordService } from './password.service.js';
+import { ConfigService } from '@nestjs/config';
 import { TokenServise } from '../../common/services/token.service.js';
+import { IJwtPayload } from '../../common/interfaces/auth.interface.js';
 import { RefreshTokenDbService } from './refresh-token-db.service.js';
 
 @Injectable()
-export class SigninService {
+export class RefreshService {
   constructor(
-    private readonly userService: UserService,
-    private readonly passwordService: PasswordService,
     private readonly tokenService: TokenServise,
-    private readonly configService: ConfigService,
     private readonly refreshTokenDbService: RefreshTokenDbService,
+    private readonly configService: ConfigService,
   ) {}
-  async signin(signinDto: SigninDto, res: Response) {
-    const { email, password } = signinDto;
+  async refresh(req: Request, res: Response) {
+    const { refreshToken: token } = req.cookies as Record<string, string>;
 
-    const user = await this.userService.findUserByEmail(email);
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    let decodeToken: IJwtPayload | null = null;
+    try {
+      decodeToken = this.tokenService.tokenVerify(
+        token,
+        'refresh',
+      ) as IJwtPayload;
+    } catch {
+      throw new UnauthorizedException();
+    }
+    const { id, tokenIdentifier } = decodeToken;
+    const oldRefreshToken =
+      await this.refreshTokenDbService.findTokenByUserIdAndTokenIdentifier(
+        id,
+        tokenIdentifier,
+      );
 
-    if (!user) {
-      throw new UnauthorizedException('Email is password is wrong');
+    if (!oldRefreshToken) {
+      throw new UnauthorizedException();
     }
 
-    const comparePassword = await this.passwordService.comparePassword(
-      password,
-      user.password,
+    await this.refreshTokenDbService.removeTokenByUserIdAndTokenIdentifier(
+      id,
+      tokenIdentifier,
     );
-
-    if (!comparePassword) {
-      throw new UnauthorizedException('Email or password is wrong');
-    }
 
     const nodeEnv = this.configService.get<string>('NODE_ENV');
     if (!nodeEnv) {
@@ -64,23 +73,23 @@ export class SigninService {
       );
     }
 
-    const tokenIdentifier = nanoid();
-
+    const newTokenIdentifier = nanoid();
     const accessToken = this.tokenService.tokenGenerate(
-      user.id,
-      tokenIdentifier,
+      id,
+      newTokenIdentifier,
       'access',
     );
+
     const refreshToken = this.tokenService.tokenGenerate(
-      user.id,
-      tokenIdentifier,
+      id,
+      newTokenIdentifier,
       'refresh',
     );
 
     await this.refreshTokenDbService.addToken(
       refreshToken,
-      user.id,
-      tokenIdentifier,
+      id,
+      newTokenIdentifier,
     );
 
     res.cookie('accessToken', accessToken, {

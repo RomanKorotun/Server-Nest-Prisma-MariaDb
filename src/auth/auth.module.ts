@@ -7,6 +7,8 @@ import { PasswordService } from './services/password.service.js';
 import { SigninService } from './services/signin.service.js';
 import { TokenServise } from '../common/services/token.service.js';
 import { CurrentService } from './services/current.service.js';
+import { RefreshService } from './services/refresh.service.js';
+import { RefreshTokenDbService } from './services/refresh-token-db.service.js';
 
 @Module({
   controllers: [AuthController],
@@ -14,6 +16,8 @@ import { CurrentService } from './services/current.service.js';
     SignupService,
     SigninService,
     CurrentService,
+    RefreshService,
+    RefreshTokenDbService,
     UserService,
     PasswordService,
     PrismaService,
