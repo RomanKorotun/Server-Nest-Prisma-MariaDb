@@ -85,4 +85,8 @@ export class TokenServise {
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
+
+  tokenDecode(token: string) {
+    return this.jwtService.decode(token);
+  }
 }

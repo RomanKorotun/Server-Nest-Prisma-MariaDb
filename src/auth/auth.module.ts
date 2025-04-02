@@ -9,6 +9,7 @@ import { TokenServise } from '../common/services/token.service.js';
 import { CurrentService } from './services/current.service.js';
 import { RefreshService } from './services/refresh.service.js';
 import { RefreshTokenDbService } from './services/refresh-token-db.service.js';
+import { SignoutService } from './services/signout.service.js';
 
 @Module({
   controllers: [AuthController],
@@ -17,6 +18,7 @@ import { RefreshTokenDbService } from './services/refresh-token-db.service.js';
     SigninService,
     CurrentService,
     RefreshService,
+    SignoutService,
     RefreshTokenDbService,
     UserService,
     PasswordService,
