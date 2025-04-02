@@ -25,5 +25,6 @@ import { SignoutService } from './services/signout.service.js';
     PrismaService,
     TokenServise,
   ],
+  exports: [UserService],
 })
 export class AuthModule {}

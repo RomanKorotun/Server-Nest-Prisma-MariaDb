@@ -4,8 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { TokenServise } from '../services/token.service.js';
 import { ICustomRequest, IJwtPayload } from '../interfaces/auth.interface.js';
+import { TokenServise } from '../services/token.service.js';
 import { UserService } from '../../auth/services/user.service.js';
 
 @Injectable()

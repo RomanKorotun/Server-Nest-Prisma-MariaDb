@@ -57,7 +57,7 @@ export class AuthController {
 
   @Post('signout')
   @UseGuards(AuthenticateGuard)
-  async signout(@Req() req: Request, @Res() res: Response) {
+  async signout(@Req() req: ICustomRequest, @Res() res: Response) {
     await this.signoutService.signout(req, res);
     res.status(200).json({ message: 'Logout success' });
   }

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { TokenServise } from '../../common/services/token.service.js';
-import { IJwtPayload } from '../../common/interfaces/auth.interface.js';
+import {
+  ICustomRequest,
+  IJwtPayload,
+} from '../../common/interfaces/auth.interface.js';
 import { RefreshTokenDbService } from './refresh-token-db.service.js';
 
 @Injectable()
@@ -10,7 +13,7 @@ export class SignoutService {
     private readonly tokenService: TokenServise,
     private readonly refreshTokenDbService: RefreshTokenDbService,
   ) {}
-  async signout(req: Request, res: Response) {
+  async signout(req: ICustomRequest, res: Response) {
     const { refreshToken } = req.cookies as Record<string, string>;
     const { id, tokenIdentifier } = this.tokenService.tokenDecode(
       refreshToken,

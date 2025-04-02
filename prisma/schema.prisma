@@ -19,6 +19,7 @@ model User {
   email String @db.VarChar(512) @unique
   password String @db.VarChar(512)
   refreshToken RefreshToken[]
+  movie Movie[]
   createdAt DateTime @db.Timestamp(0) @default(now()) @map("created_at")
   updatedAt DateTime @db.Timestamp(0) @updatedAt @map("updated_at")
 
@@ -36,4 +37,17 @@ model RefreshToken {
 
   @@unique([userId,tokenIdentifier])
   @@map("refresh_tokens")
+}
+
+model Movie {
+  id Int @id @db.UnsignedInt @default(autoincrement())
+  title String @db.VarChar(255)
+  director String @db.VarChar(255)
+  releaseYear Int @db.Year() @map("release_year")
+  userId Int @db.UnsignedInt @map("user_id")
+  user User @relation(fields: [userId],references: [id])
+  createdAt DateTime @db.Timestamp(0) @default(now()) @map("created_at")
+  updatedAt DateTime @db.Timestamp(0) @updatedAt @map("updated_at")
+
+  @@map("movies")
 }
