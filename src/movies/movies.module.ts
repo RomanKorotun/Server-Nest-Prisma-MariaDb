@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MovieController } from './movie.controller.js';
+import { MovieController } from './movies.controller.js';
 import { AddMovieService } from './services/add-movie.service.js';
 import { PrismaService } from '../common/services/prisma.service.js';
 import { AuthModule } from '../auth/auth.module.js';

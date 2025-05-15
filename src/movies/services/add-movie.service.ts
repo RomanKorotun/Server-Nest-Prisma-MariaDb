@@ -10,6 +10,13 @@ export class AddMovieService {
     const { id } = req.user!;
     return await this.prismaService.movie.create({
       data: { ...addMovieDto, user: { connect: { id } } },
+      select: {
+        id: true,
+        title: true,
+        director: true,
+        releaseYear: true,
+        user: { select: { email: true } },
+      },
     });
   }
 }
